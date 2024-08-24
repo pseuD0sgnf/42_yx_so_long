@@ -6,7 +6,7 @@
 /*   By: yuxchen <yuxchen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/14 20:20:35 by yuxchen           #+#    #+#             */
-/*   Updated: 2024/08/23 20:23:35 by yuxchen          ###   ########.fr       */
+/*   Updated: 2024/08/24 03:59:06 by yuxchen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,6 +106,7 @@ int		ft_error_msg(char *msg, t_game *game);
 void	ft_check_args(int argc, char **argv, t_game *game);
 char	*ft_strappend(char **original, const char *to_append);
 void	ft_check_for_empty_line(char *map, t_game *game);
+void	ft_check_empty_file(char *map, int rows, t_game *game);
 void	ft_init_map(t_game *game, char *file_name);
 void	ft_init_vars(t_game *game);
 void	ft_check_rows(t_game *game);
@@ -114,7 +115,7 @@ void	ft_count_map_parameters(t_game *game);
 void	ft_verify_map_parameters(t_game *game);
 void	ft_check_row_lengths(t_game *game);
 char	**copy_map(t_game *game);
-void	flood_fill(char **map, int y, int x);
+void	flood_fill(char **map, int y, int x, int *exit_reached);
 void	check_map_for_coins_and_exit(char **map_copy, int *coins_count, t_game *game);
 void	ft_check_map_validity(t_game *game);
 void	ft_check_map(t_game *game);

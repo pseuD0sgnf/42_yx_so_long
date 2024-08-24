@@ -6,7 +6,7 @@
 /*   By: yuxchen <yuxchen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/14 01:00:40 by yuxchen           #+#    #+#             */
-/*   Updated: 2024/08/23 20:22:59 by yuxchen          ###   ########.fr       */
+/*   Updated: 2024/08/24 03:58:39 by yuxchen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,23 +23,6 @@ void	ft_free_map(t_game *game)
 		free(game->map.full[--row]);
 	free(game->map.full);
 }
-
-// // 遍历地图中的每一行，释放每一行所占用的内存。然后释放存储这些行指针的数组本身
-// void	ft_free_map(t_game *game)
-// {
-// 	int	i;
-
-// 	if (game->map.full != NULL)
-// 	{
-// 		i = 0;
-// 		while (i < game->map.rows)
-// 		{
-// 			free(game->map.full[i]);
-// 			i++;
-// 		}
-// 		free(game->map.full);
-// 	}
-// }
 
 // 在发生错误时输出错误信息、清理资源，并终止程序
 int	ft_error_msg(char *msg, t_game *game)
@@ -58,13 +41,16 @@ void	ft_check_args(int argc, char **argv, t_game *game)
 
 	game->map_alloc = false;
 	if (argc > 2)
-		ft_error_msg("Oopsie! That's too many arguments! I only need two. 😊",
+		ft_error_msg("Uh-oh! That's too many arguments! I only need two. 😊",
 			game);
 	if (argc < 2)
-		ft_error_msg("Oh no! Where's the map file? I can't find it! 😢", game);
+		ft_error_msg("Uh-oh! Where's the map file? I can't find it! 😢", game);
 	args_len = ft_strlen(argv[1]);
 	if (!ft_strnstr(&argv[1][args_len - 4], ".ber", 4))
 		ft_error_msg("Uh-oh! That file extension should be .ber! 🧐",
+			game);
+	if (ft_strnstr(&argv[1][args_len - 5], "/.ber", 5))
+		ft_error_msg("Uh-oh! It's a hidden file, not extension.ber! 🥺",
 			game);
 }
 
@@ -83,7 +69,7 @@ char	*ft_strappend(char **original, const char *to_append)
 		return (NULL);
 	ft_memcpy(str, *original, ft_strlen(*original));
 	ft_memcpy(str + ft_strlen(*original), to_append, ft_strlen(to_append) + 1);
-	*original = NULL;
+	free(*original);
 	return (str);
 }
 
@@ -95,13 +81,13 @@ void	ft_check_for_empty_line(char *map, t_game *game)
 	if (map[0] == '\n')
 	{
 		free(map);
-		ft_error_msg("Uh-oh! The map has a empty line right at the start! 😯",
+		ft_error_msg("Uh-oh! The map has a empty line at the start! 😯",
 			game);
 	}
 	if (map[ft_strlen(map) - 1] == '\n')
 	{
 		free(map);
-		ft_error_msg("Oopsie! There's an empty line at the end of the map. 🧹",
+		ft_error_msg("Uh-oh! There's an empty line at the end of the map. 🧹",
 			game);
 	}
 	i = 0;
@@ -110,10 +96,19 @@ void	ft_check_for_empty_line(char *map, t_game *game)
 		if (map[i] == '\n' && map[i + 1] == '\n')
 		{
 			free(map);
-			ft_error_msg("Yikes! The map has a empty line in the middle! 😮",
+			ft_error_msg("Uh-oh! The map has a empty line in the middle! 😮",
 				game);
 		}
 		i++;
+	}
+}
+
+void	ft_check_empty_file(char *map, int rows, t_game *game)
+{
+	if (rows == 0 || map[0] == '\0')
+	{
+		free(map);
+		ft_error_msg("Oops! The map file is empty! 😢", game);
 	}
 }
 
@@ -137,11 +132,22 @@ void	ft_init_map(t_game *game, char *file_name)
 		game->map.rows++;
 	}
 	close(fd);
+	ft_check_empty_file(map_content, game->map.rows, game);
 	ft_check_for_empty_line(map_content, game);
 	game->map.full = ft_split(map_content, '\n');
-	game->map.columns = ft_strlen(game->map.full[0]) - 1;
-	game->map_alloc = true;
 	free(map_content);
+	game->map.columns = ft_strlen(game->map.full[0]);
+	// ft_printf("map's rows is %d, map's columns is %d\n", game->map.rows, game->map.columns);
+	game->map_alloc = true;
+
+	// int i;
+	// i = 0;
+	// while (i < game->map.rows)
+	// {
+	// 	ft_printf("%s\n", game->map.full[i]);
+	// 	i++;
+	// }
+
 }
 
 // 初始化game中map的金币数、出口数、玩家数，移动次数和玩家的初始朝向
@@ -164,11 +170,13 @@ void	ft_check_rows(t_game *game)
 	last_col = game->map.columns - 1;
 	while (row < game->map.rows)
 	{
+		// ft_printf("Checking row %d, first_col: 0, last_char: %c\n", row, game->map.full[row][0]);
+		// ft_printf("Checking row %d, last_col: %d, last_char: %c\n", row, last_col, game->map.full[row][last_col]);
 		if (game->map.full[row][0] != WALL)
-			ft_error_msg("Invalid Map! Missing a wall on the left side. 🧱",
+			ft_error_msg("Invalid Map! Check the (left) wall again. 🧱",
 				game);
 		if (game->map.full[row][last_col] != WALL)
-			ft_error_msg("Invalid Map! Missing a wall on the right side. 🧱",
+			ft_error_msg("Invalid Map! Check the (right) wall again. 🧱",
 				game);
 		row++;
 	}
@@ -184,10 +192,12 @@ void	ft_check_columns(t_game *game)
 	last_row = game->map.rows - 1;
 	while (col < game->map.columns)
 	{
+		// ft_printf("Checking col %d, top_row: 0, top_char: %c\n", col, game->map.full[0][col]);
+		// ft_printf("Checking col %d, last_row: %d, last_char: %c\n", col, last_row, game->map.full[last_row][col]);
 		if (game->map.full[0][col] != WALL)
-			ft_error_msg("Invalid Map! Missing a wall at the top. 🧱", game);
+			ft_error_msg("Invalid Map! Check the (top) wall again. 🧱", game);
 		if (game->map.full[last_row][col] != WALL)
-			ft_error_msg("Invalid Map! Missing a wall at the bottom. 🧱", game);
+			ft_error_msg("Invalid Map! Check the (bottom) wall again. 🧱", game);
 		col++;
 	}
 }
@@ -243,8 +253,16 @@ void	ft_check_row_lengths(t_game *game)
 	i = 1;
 	while (i < game->map.rows)
 	{
-		if (ft_strlen(game->map.full[i]) != first_row_length)
-			ft_error_msg("Invalid Map! Rows are of different lengths.", game);
+		// if (i == game->map.rows - 1)
+		// {
+		// 	if (ft_strlen(game->map.full[i]) != first_row_length - 1)
+		// 		ft_error_msg("Invalid Map! Check the walls again. 🧱", game);
+		// }
+		// else
+		// {
+			if (ft_strlen(game->map.full[i]) != first_row_length)
+				ft_error_msg("Invalid Map! Check the walls again. 🧱", game);
+		// }
 		i++;
 	}
 }
@@ -270,17 +288,21 @@ char	**copy_map(t_game *game)
 }
 
 // 从指定的起点遍历整个地图，并标记可以到达的区域
-void	flood_fill(char **map, int y, int x)
+void	flood_fill(char **map, int y, int x, int *exit_reached)
 {
 	if (map[y][x] == WALL || map[y][x] == 'F')
 		return ;
-	if (map[y][x] == MAP_EXIT || map[y][x] == COINS || map[y][x] == FLOOR
-		|| map[y][x] == PLAYER)
+	if (map[y][x] == MAP_EXIT)
+	{
+		*exit_reached = 1;
+		return ;
+	}
+	if (map[y][x] == COINS || map[y][x] == FLOOR || map[y][x] == PLAYER)
 		map[y][x] = 'F';
-	flood_fill(map, y + 1, x);
-	flood_fill(map, y - 1, x);
-	flood_fill(map, y, x + 1);
-	flood_fill(map, y, x - 1);
+	flood_fill(map, y + 1, x, exit_reached);
+	flood_fill(map, y - 1, x, exit_reached);
+	flood_fill(map, y, x + 1, exit_reached);
+	flood_fill(map, y, x - 1, exit_reached);
 }
 
 // 遍历地图的每个块，检查是否有不可达的出口和收藏品，并更新未访问的金币计数
@@ -296,8 +318,8 @@ void	check_map_for_coins_and_exit(char **map_copy, int *coins_count,
 		j = 0;
 		while (map_copy[i][j])
 		{
-			if (map_copy[i][j] == MAP_EXIT)
-				ft_error_msg("Invalid Map! Exit is not reachable.", game);
+		// 	if (map_copy[i][j] == MAP_EXIT)
+		// 		ft_error_msg("Invalid Map! Exit is not reachable.", game);
 			if (map_copy[i][j] == COINS)
 				(*coins_count)++;
 			j++;
@@ -314,16 +336,20 @@ void	ft_check_map_validity(t_game *game)
 	int		y;
 	int		x;
 	int		coins_count;
+	int		exit_reached;
 
 	coins_count = 0;
+	exit_reached = 0;
 	map_copy = copy_map(game);
 	y = game->map.player.y;
 	x = game->map.player.x;
-	flood_fill(map_copy, y, x);
+	flood_fill(map_copy, y, x, &exit_reached);
 	check_map_for_coins_and_exit(map_copy, &coins_count, game);
 	free(map_copy);
 	if (coins_count != 0)
 		ft_error_msg("Invalid Map! Not all collectibles are reachable.", game);
+	if (!exit_reached)
+		ft_error_msg("Invalid Map! Exit is not reachable.", game);
 }
 
 // 检查游戏地图的有效性。检查长宽，计数和核对要素数量
@@ -333,7 +359,7 @@ void	ft_check_map(t_game *game)
 	ft_check_columns(game);
 	ft_count_map_parameters(game);
 	ft_verify_map_parameters(game);
-	// ft_check_row_lengths(game);
+	ft_check_row_lengths(game);
 	ft_check_map_validity(game);
 }
 
@@ -562,7 +588,7 @@ int	ft_handle_input(int keysym, t_game *game)
 		ft_player_move(game, game->map.player.y + 1, game->map.player.x, FRONT);
 	else if (keysym == KEY_D || keysym == KEY_RIGHT)
 		ft_player_move(game, game->map.player.y, game->map.player.x + 1, RIGHT);
-	else if (keysym == KEY_Q || keysym == KEY_ESC)
+	else if (keysym == KEY_ESC)
 		ft_close_game(game);
 	return (0);
 }
