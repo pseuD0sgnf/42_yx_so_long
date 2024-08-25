@@ -6,7 +6,7 @@
 /*   By: yuxchen <yuxchen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/14 01:00:40 by yuxchen           #+#    #+#             */
-/*   Updated: 2024/08/24 03:58:39 by yuxchen          ###   ########.fr       */
+/*   Updated: 2024/08/25 02:21:09 by yuxchen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,11 +47,9 @@ void	ft_check_args(int argc, char **argv, t_game *game)
 		ft_error_msg("Uh-oh! Where's the map file? I can't find it! 😢", game);
 	args_len = ft_strlen(argv[1]);
 	if (!ft_strnstr(&argv[1][args_len - 4], ".ber", 4))
-		ft_error_msg("Uh-oh! That file extension should be .ber! 🧐",
-			game);
+		ft_error_msg("Uh-oh! That file extension should be .ber! 🧐", game);
 	if (ft_strnstr(&argv[1][args_len - 5], "/.ber", 5))
-		ft_error_msg("Uh-oh! It's a hidden file, not extension.ber! 🥺",
-			game);
+		ft_error_msg("Uh-oh! It's a hidden file, not extension.ber! 🥺", game);
 }
 
 // 将字符串 to_append 附加到字符串 original 之后，并返回新字符串
@@ -81,8 +79,7 @@ void	ft_check_for_empty_line(char *map, t_game *game)
 	if (map[0] == '\n')
 	{
 		free(map);
-		ft_error_msg("Uh-oh! The map has a empty line at the start! 😯",
-			game);
+		ft_error_msg("Uh-oh! The map has a empty line at the start! 😯", game);
 	}
 	if (map[ft_strlen(map) - 1] == '\n')
 	{
@@ -137,9 +134,9 @@ void	ft_init_map(t_game *game, char *file_name)
 	game->map.full = ft_split(map_content, '\n');
 	free(map_content);
 	game->map.columns = ft_strlen(game->map.full[0]);
-	// ft_printf("map's rows is %d, map's columns is %d\n", game->map.rows, game->map.columns);
+	// ft_printf("map's rows is %d, map's columns is %d\n", game->map.rows,
+	//	game->map.columns);
 	game->map_alloc = true;
-
 	// int i;
 	// i = 0;
 	// while (i < game->map.rows)
@@ -147,7 +144,6 @@ void	ft_init_map(t_game *game, char *file_name)
 	// 	ft_printf("%s\n", game->map.full[i]);
 	// 	i++;
 	// }
-
 }
 
 // 初始化game中map的金币数、出口数、玩家数，移动次数和玩家的初始朝向
@@ -170,14 +166,14 @@ void	ft_check_rows(t_game *game)
 	last_col = game->map.columns - 1;
 	while (row < game->map.rows)
 	{
-		// ft_printf("Checking row %d, first_col: 0, last_char: %c\n", row, game->map.full[row][0]);
-		// ft_printf("Checking row %d, last_col: %d, last_char: %c\n", row, last_col, game->map.full[row][last_col]);
+		// ft_printf("Checking row %d, first_col: 0, last_char: %c\n", row,
+		//	game->map.full[row][0]);
+		// ft_printf("Checking row %d, last_col: %d, last_char: %c\n", row,
+		//	last_col, game->map.full[row][last_col]);
 		if (game->map.full[row][0] != WALL)
-			ft_error_msg("Invalid Map! Check the (left) wall again. 🧱",
-				game);
+			ft_error_msg("Invalid Map! Check the (left) wall again. 🧱", game);
 		if (game->map.full[row][last_col] != WALL)
-			ft_error_msg("Invalid Map! Check the (right) wall again. 🧱",
-				game);
+			ft_error_msg("Invalid Map! Check the (right) wall again. 🧱", game);
 		row++;
 	}
 }
@@ -192,8 +188,10 @@ void	ft_check_columns(t_game *game)
 	last_row = game->map.rows - 1;
 	while (col < game->map.columns)
 	{
-		// ft_printf("Checking col %d, top_row: 0, top_char: %c\n", col, game->map.full[0][col]);
-		// ft_printf("Checking col %d, last_row: %d, last_char: %c\n", col, last_row, game->map.full[last_row][col]);
+		// ft_printf("Checking col %d, top_row: 0, top_char: %c\n", col,
+		//	game->map.full[0][col]);
+		// ft_printf("Checking col %d, last_row: %d, last_char: %c\n", col,
+		//	last_row, game->map.full[last_row][col]);
 		if (game->map.full[0][col] != WALL)
 			ft_error_msg("Invalid Map! Check the (top) wall again. 🧱", game);
 		if (game->map.full[last_row][col] != WALL)
@@ -246,7 +244,7 @@ void	ft_verify_map_parameters(t_game *game)
 // 检查地图文件的每一行是否具有相同的长度
 void	ft_check_row_lengths(t_game *game)
 {
-	int	i;
+	int		i;
 	size_t	first_row_length;
 
 	first_row_length = ft_strlen(game->map.full[0]);
@@ -260,8 +258,8 @@ void	ft_check_row_lengths(t_game *game)
 		// }
 		// else
 		// {
-			if (ft_strlen(game->map.full[i]) != first_row_length)
-				ft_error_msg("Invalid Map! Check the walls again. 🧱", game);
+		if (ft_strlen(game->map.full[i]) != first_row_length)
+			ft_error_msg("Invalid Map! Check the walls again. 🧱", game);
 		// }
 		i++;
 	}
@@ -318,8 +316,8 @@ void	check_map_for_coins_and_exit(char **map_copy, int *coins_count,
 		j = 0;
 		while (map_copy[i][j])
 		{
-		// 	if (map_copy[i][j] == MAP_EXIT)
-		// 		ft_error_msg("Invalid Map! Exit is not reachable.", game);
+			// 	if (map_copy[i][j] == MAP_EXIT)
+			// 		ft_error_msg("Invalid Map! Exit is not reachable.", game);
 			if (map_copy[i][j] == COINS)
 				(*coins_count)++;
 			j++;
