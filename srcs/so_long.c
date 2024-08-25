@@ -6,14 +6,14 @@
 /*   By: yuxchen <yuxchen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/14 01:00:40 by yuxchen           #+#    #+#             */
-/*   Updated: 2024/08/25 02:21:09 by yuxchen          ###   ########.fr       */
+/*   Updated: 2024/08/25 02:37:44 by yuxchen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "so_long.h"
 
-// 释放与游戏地图相关的内存资源。具体来说，它遍历并释放
-// 存储地图行的二维数组中的每一行，然后释放存储这些行指针的数组
+// Traverses and frees each row in the 2D array storing the map row
+// frees the array storing these row pointers
 void	ft_free_map(t_game *game)
 {
 	int	row;
@@ -24,7 +24,8 @@ void	ft_free_map(t_game *game)
 	free(game->map.full);
 }
 
-// 在发生错误时输出错误信息、清理资源，并终止程序
+// Output an error message, clean up resources, 
+// and terminate the program in case of an error
 int	ft_error_msg(char *msg, t_game *game)
 {
 	if (game && game->map_alloc)
@@ -34,7 +35,8 @@ int	ft_error_msg(char *msg, t_game *game)
 	exit(EXIT_FAILURE);
 }
 
-// 检查程序启动时传递的命令行参数是否正确，并且在发现错误时终止程序并给出错误信息
+// Check if the command-line arguments passed at the program's start are
+// correct, and terminate the program with an error message if they are not
 void	ft_check_args(int argc, char **argv, t_game *game)
 {
 	int	args_len;
@@ -52,8 +54,10 @@ void	ft_check_args(int argc, char **argv, t_game *game)
 		ft_error_msg("Uh-oh! It's a hidden file, not extension.ber! 🥺", game);
 }
 
-// 将字符串 to_append 附加到字符串 original 之后，并返回新字符串
-// 动态分配内存给新字符串，然后释放旧的 original 内存
+// Append the string to_append to the end of the string original,
+// and return the new string
+// The memory is dynamically allocated for the new string,
+// and the old original memory is freed
 char	*ft_strappend(char **original, const char *to_append)
 {
 	char	*str;
@@ -71,7 +75,7 @@ char	*ft_strappend(char **original, const char *to_append)
 	return (str);
 }
 
-// 检查地图字符串是否包含不合法的空行（即全为 \n 的行）
+// Check if the map string contains any illegal empty lines
 void	ft_check_for_empty_line(char *map, t_game *game)
 {
 	int	i;
@@ -100,6 +104,7 @@ void	ft_check_for_empty_line(char *map, t_game *game)
 	}
 }
 
+// Check if the map file is empty
 void	ft_check_empty_file(char *map, int rows, t_game *game)
 {
 	if (rows == 0 || map[0] == '\0')
@@ -109,7 +114,8 @@ void	ft_check_empty_file(char *map, int rows, t_game *game)
 	}
 }
 
-// 初始化游戏地图，将地图文件的内容读取到内存中，并进行必要的检查和处理、计算长宽
+// Initialize the game map, read the contents of the map file into memory,
+// perform necessary checks and processing, calculating the width and height
 void	ft_init_map(t_game *game, char *file_name)
 {
 	char	*map_content;
@@ -146,7 +152,8 @@ void	ft_init_map(t_game *game, char *file_name)
 	// }
 }
 
-// 初始化game中map的金币数、出口数、玩家数，移动次数和玩家的初始朝向
+// Initialize the number of coins, exits, players, and movements
+// the initial direction of the player
 void	ft_init_vars(t_game *game)
 {
 	game->map.coins = 0;
@@ -156,7 +163,7 @@ void	ft_init_vars(t_game *game)
 	game->player_sprite = RIGHT;
 }
 
-// 确保地图的每一行的两端都有墙壁
+// Ensure that each row of the map is enclosed by walls on both ends
 void	ft_check_rows(t_game *game)
 {
 	int	row;
@@ -178,7 +185,8 @@ void	ft_check_rows(t_game *game)
 	}
 }
 
-// 检查地图的顶端和底端（即第一行和最后一行）是否完全由墙壁包围
+// Check if the top and bottom of the map (i.e., the first
+// and last rows) are completely surrounded by walls
 void	ft_check_columns(t_game *game)
 {
 	int	col;
@@ -200,7 +208,8 @@ void	ft_check_columns(t_game *game)
 	}
 }
 
-// 记录元素的位置和数量，检查地图中是否有不期望的字符
+// Record the position and number of elements
+// check if there are any unexpected characters in the map
 void	ft_count_map_parameters(t_game *game)
 {
 	int	row;
@@ -230,7 +239,7 @@ void	ft_count_map_parameters(t_game *game)
 	}
 }
 
-// 验证元素数量是否正确
+// Verify if the number of elements is correct
 void	ft_verify_map_parameters(t_game *game)
 {
 	if (game->map.coins == 0)
@@ -241,7 +250,7 @@ void	ft_verify_map_parameters(t_game *game)
 		ft_error_msg("Invalid Map! It must have 1 player. 🎮", game);
 }
 
-// 检查地图文件的每一行是否具有相同的长度
+// Check if each row of the map file has the same length
 void	ft_check_row_lengths(t_game *game)
 {
 	int		i;
@@ -265,7 +274,7 @@ void	ft_check_row_lengths(t_game *game)
 	}
 }
 
-// 创建一个地图的副本用洪水填充检验
+// Create a copy of the map for flood fill validation
 char	**copy_map(t_game *game)
 {
 	int		i;
@@ -285,7 +294,8 @@ char	**copy_map(t_game *game)
 	return (map_copy);
 }
 
-// 从指定的起点遍历整个地图，并标记可以到达的区域
+// Traverse the entire map from the specified starting point
+// and mark reachable areas
 void	flood_fill(char **map, int y, int x, int *exit_reached)
 {
 	if (map[y][x] == WALL || map[y][x] == 'F')
@@ -303,7 +313,8 @@ void	flood_fill(char **map, int y, int x, int *exit_reached)
 	flood_fill(map, y, x - 1, exit_reached);
 }
 
-// 遍历地图的每个块，检查是否有不可达的出口和收藏品，并更新未访问的金币计数
+// Traverse each tile of the map, check for unreachable exits and collectibles
+// and update the count of unvisited coins
 void	check_map_for_coins_and_exit(char **map_copy, int *coins_count,
 		t_game *game)
 {
@@ -327,7 +338,8 @@ void	check_map_for_coins_and_exit(char **map_copy, int *coins_count,
 	}
 }
 
-// 确保从玩家的起始位置可以到达所有出口和收藏品。如果不能，则地图无效。
+// Ensure that all exits and collectibles are reachable from
+// the player's starting position. If not, the map is invalid
 void	ft_check_map_validity(t_game *game)
 {
 	char	**map_copy;
@@ -350,7 +362,8 @@ void	ft_check_map_validity(t_game *game)
 		ft_error_msg("Invalid Map! Exit is not reachable.", game);
 }
 
-// 检查游戏地图的有效性。检查长宽，计数和核对要素数量
+// Check the validity of the game map. Check the width and height,
+// count and verify the number of elements
 void	ft_check_map(t_game *game)
 {
 	ft_check_rows(game);
@@ -361,7 +374,8 @@ void	ft_check_map(t_game *game)
 	ft_check_map_validity(game);
 }
 
-// 加载指定路径的sprite，成功MiniLibX则返回包含图像指针、宽度和高度的t_image
+// Load the sprite from the specified path. If successful, MiniLibX returns
+// a t_image containing pointers to the image, width, and height
 t_image	ft_load_sprite(void *mlx, char *path, t_game *game)
 {
 	t_image	sprite;
@@ -372,7 +386,7 @@ t_image	ft_load_sprite(void *mlx, char *path, t_game *game)
 	return (sprite);
 }
 
-// 初始化所有sprites并加载到内存
+// Initialize all sprites and load them into memory
 void	ft_init_sprites(t_game *game)
 {
 	void	*mlx;
@@ -389,7 +403,7 @@ void	ft_init_sprites(t_game *game)
 	game->exit_closed = ft_load_sprite(mlx, EXIT_CLOSED_XPM, game);
 }
 
-// 初始化MiniLibX并创建窗口
+// Initialize MiniLibX and create a window
 void	ft_init_mlx(t_game *game)
 {
 	game->mlx_ptr = mlx_init();
@@ -407,14 +421,14 @@ void	ft_init_mlx(t_game *game)
 	}
 }
 
-// 调用MiniLibX绘制
+// Call MiniLibX to draw
 void	ft_render_sprite(t_game *game, t_image sprite, int row, int col)
 {
 	mlx_put_image_to_window(game->mlx_ptr, game->win_ptr, sprite.xpm_ptr, col
 		* sprite.x, row * sprite.y);
 }
 
-// 根据玩家朝向渲染玩家图像
+// Render the player's image based on the player's direction
 void	ft_render_player(t_game *game, int row, int col)
 {
 	if (game->player_sprite == FRONT)
@@ -427,7 +441,7 @@ void	ft_render_player(t_game *game, int row, int col)
 		ft_render_sprite(game, game->player_back, row, col);
 }
 
-// 用MiniLibX将玩家的移动次数显示在游戏窗口中
+// Display the player's movement count in the game window using MiniLibX
 void	ft_print_movements(t_game *game)
 {
 	char	*movements;
@@ -444,7 +458,10 @@ void	ft_print_movements(t_game *game)
 	free(phrase);
 }
 
-// 识别字符，决定要渲染的图像。墙、地板、金币直接渲染，出口判断是否还有金币，角色渲染需要进一步判定
+// Identify the character and decide which image to render.
+// Walls, floors, and coins are rendered directly. The exit is determined 
+// based on whether there are remaining coins.
+// Player rendering requires further determination
 void	ft_identify_sprite(t_game *game, int row, int col)
 {
 	char	parameter;
@@ -469,7 +486,7 @@ void	ft_identify_sprite(t_game *game, int row, int col)
 		ft_render_player(game, row, col);
 }
 
-// 遍历地图，渲染图像，打印移动
+// Traverse the map, render the images, and print the movements
 int	ft_render_map(t_game *game)
 {
 	int	row;
@@ -490,7 +507,7 @@ int	ft_render_map(t_game *game)
 	return (0);
 }
 
-// 清除所有图像资源
+// Destroy all image resources
 void	ft_destroy_images(t_game *game)
 {
 	mlx_destroy_image(game->mlx_ptr, game->wall.xpm_ptr);
@@ -504,9 +521,11 @@ void	ft_destroy_images(t_game *game)
 	mlx_destroy_image(game->mlx_ptr, game->open_exit.xpm_ptr);
 }
 
-// 释放所有动态内存和资源，关闭所有与图形界面相关的资源
-// mlx_ptr是在调用 mlx_init() 时动态分配的内存块，需要手动释放
-// win_ptr 是由 MLX 库内部管理的资源，调用 mlx_destroy_window 时已经处理了其释放
+// Free all dynamically allocated memory and resources.
+// mlx_ptr is a memory block dynamically allocated when calling mlx_init(),
+// and needs to be manually freed.
+// win_ptr is a resource managed internally by the MLX library,
+// and is handled when calling mlx_destroy_window
 void	ft_free_all_allocated_memory(t_game *game)
 {
 	ft_destroy_images(game);
@@ -521,7 +540,7 @@ void	ft_free_all_allocated_memory(t_game *game)
 	free(game);
 }
 
-// 显示胜利消息，释放所有分配的内存，并退出游戏
+// Display a victory message, free all allocated memory, and exit the game
 int	ft_victory(t_game *game)
 {
 	ft_printf("\n		Movements: %d\n", ++game->movements);
@@ -538,7 +557,7 @@ int	ft_victory(t_game *game)
 	exit(EXIT_SUCCESS);
 }
 
-// 清理，显示信息，并终止程序
+// Clean up, display information, and terminate the program
 int	ft_close_game(t_game *game)
 {
 	if (game)
@@ -550,7 +569,8 @@ int	ft_close_game(t_game *game)
 	exit(EXIT_FAILURE);
 }
 
-// 检查玩家是否可以移动到指定的新位置，并在可能的情况下更新玩家的位置、地图状态，并重新渲染地图
+// Check if the player can move to the specified new position,
+// if so, update the player's position, map status, and re-render the map.
 void	ft_player_move(t_game *game, int new_y, int new_x, int player_sprite)
 {
 	int	old_x;
@@ -575,7 +595,8 @@ void	ft_player_move(t_game *game, int new_y, int new_x, int player_sprite)
 	}
 }
 
-// 检查新位置是否在地图范围内，然后根据按键的不同执行相应的动作
+// Check if the new position is within the map boundaries,
+// then perform the corresponding action based on the key pressed
 int	ft_handle_input(int keysym, t_game *game)
 {
 	if (keysym == KEY_W || keysym == KEY_UP)
@@ -591,7 +612,7 @@ int	ft_handle_input(int keysym, t_game *game)
 	return (0);
 }
 
-// mlx_hook将一个事件（如按键、鼠标点击等）与一个回调函数关联起来。当这个事件发生时，MLX 会调用相应的回调函数
+// mlx_hook associates an event with a callback function
 int	main(int argc, char **argv)
 {
 	t_game	*game;
