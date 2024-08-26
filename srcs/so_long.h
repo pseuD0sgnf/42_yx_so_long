@@ -6,7 +6,7 @@
 /*   By: yuxchen <yuxchen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/14 20:20:35 by yuxchen           #+#    #+#             */
-/*   Updated: 2024/08/25 02:24:20 by yuxchen          ###   ########.fr       */
+/*   Updated: 2024/08/25 12:24:18 by yuxchen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 # include <X11/X.h>
 # include <X11/keysym.h>
 # include <fcntl.h>
-# include <mlx.h>
+# include "../minilibx-linux/mlx.h"
 # include <stdbool.h>
 # include <unistd.h>
 

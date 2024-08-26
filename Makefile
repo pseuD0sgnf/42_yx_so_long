@@ -5,7 +5,7 @@
 #                                                     +:+ +:+         +:+      #
 #    By: yuxchen <yuxchen@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2024/08/23 14:21:06 by yuxchen           #+#    #+#              #
+#    Created: 2024/08/13 14:21:06 by yuxchen           #+#    #+#              #
 #    Updated: 2024/08/23 20:16:51 by yuxchen          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
@@ -19,7 +19,11 @@ FT_PRINTF		= ./ft_printf/libftprintf.a
 CC 				= clang
 
 STANDARD_FLAGS 	= -Wall -Werror -Wextra
-MINILIBX_FLAGS	= -lmlx -lXext -lX11
+
+MLX_PATH		= ./minilibx-linux
+MLX_LIB			= -L$(MLX_PATH) -lmlx
+MLX_INC			= -I$(MLX_PATH)
+MINILIBX_FLAGS		= $(MLX_LIB) -lXext -lX11
 
 VALGRIND		= @valgrind --leak-check=full --show-leak-kinds=all \
 --track-origins=yes --quiet --tool=memcheck --keep-debuginfo=yes
@@ -30,11 +34,18 @@ SRCS_DIR		= ./srcs/
 OBJS_DIR		= ./objs/
 
 SRCS 			= $(addprefix $(SRCS_DIR),\
-				so_long.c)
+				so_long.c \
+				map_validation.c \
+				flood_fill.c \
+				error_handling.c \
+				sprite_management.c \
+				map_rendering.c \
+				mlx_initialization.c \
+				map_checks.c)
 
 OBJS			= $(SRCS:$(SRCS_DIR)%.c=$(OBJS_DIR)%.o)
 
-all:			${LIBFT} ${GET_NEXT_LINE} ${FT_PRINTF} ${NAME}
+all:			${LIBFT} ${GET_NEXT_LINE} ${FT_PRINTF} ${MLX_PATH}/libmlx.a ${NAME}
 
 ${NAME}: 		${OBJS}
 				${CC} ${OBJS} ${LIBFT} ${GET_NEXT_LINE} ${FT_PRINTF} ${STANDARD_FLAGS} ${MINILIBX_FLAGS} -o ${NAME}
@@ -53,6 +64,9 @@ ${GET_NEXT_LINE}:
 ${FT_PRINTF}:
 				make -C ./ft_printf
 
+${MLX_PATH}/libmlx.a:
+				make -C ${MLX_PATH}
+
 clean:
 				make clean -C ./libft
 				make clean -C ./get_next_line
@@ -68,7 +82,4 @@ fclean:			clean
 
 re:				fclean all
 
-run:			${NAME}
-				${VALGRIND} ./${NAME} assets/maps/valid/map4.ber
-
-.PHONY:			all clean fclean re valgrind run
+.PHONY:			all clean fclean re
